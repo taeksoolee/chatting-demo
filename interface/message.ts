@@ -1,7 +1,8 @@
-export type MessagePayload = {
+export type EmitMessagePayload = {
   text: string,
 }
 
-export type EventType =
-  | 'message';
+export type EmitEventType =
+  | 'message'
+  | 'message2';
 
