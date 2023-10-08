@@ -1,26 +1,32 @@
-import { SocketContextStore } from "frontend/context";
-import React, { useContext, useEffect, useState } from "react";
+import React from "react";
+import { useSocket } from 'frontend/context/socket';
+import c from 'classnames';
 
-export const MessageList: React.FC = () => {
-  const socket = useContext(SocketContextStore);
-  const [list, setList] = useState<string[]>([]);
 
-  useEffect(() => {
-    const idx = socket.controller.addReceiveBroadcastMessageHandler((res) => {
-      console.log("broadcast", res);
-      setList((list) => [...list, res.text]);
-    });
-    return () => {
-      socket.controller.removeReceiveBroadcastMessageHandler(idx);
-    };
-  }, []);
+type ItemOf<T> = T extends Array<infer V> ? V : T;
+
+export const MessageList: React.FC<{}> = () => {
+  const { user, messages: data }  = useSocket();
+  const isOwn = (e: ItemOf<typeof data>) => e.user.username === user?.username;
 
   return (
-    <div>
-      <div>Message List</div>
-      {list.map((text, idx) => (
-        <div key={idx}>{text}</div>
-      ))}
-    </div>
+    <article>
+      <h2>Message List</h2>
+      {data.length === 0 && <div>Not Found Message</div>}
+      {data.map((e, idx) => {
+        const own = isOwn(e);
+        const className = c([ 'message', { own } ]);
+        return (
+          <div 
+            key={idx} 
+            {...{className}}
+          >
+            {own 
+              ? (<span >{e.user.username} / <span className="text">{e.message.text}</span></span>) 
+              : (<span ><span className="text">{e.message.text}</span> / {e.user.username}</span>)}
+          </div>
+        )
+      })}
+    </article>
   );
 };

@@ -1,34 +1,26 @@
-import React, { useState } from "react";
-import { SocketContext } from "frontend/context";
-import { MessageSenderForm } from "frontend/components/MessageSenderForm";
-import { MessageList } from "frontend/components/MessageList";
-import { RoomList } from "frontend/components/RoomList";
+import React from "react";
 
 import {
   QueryClient,
   QueryClientProvider,
-  useQuery
 } from "@tanstack/react-query";
+import { ClientSocket } from "frontend/interface";
+import { io } from "socket.io-client";
+
+import { SocketProvider } from "frontend/context/socket";
+import { RoutingPage } from "./page/RoutingPage";
 
 const queryClient = new QueryClient();
+const socket: ClientSocket = io("ws://localhost:4000", {
+  transports: ['websocket'],
+});
 
-export const App: React.FC = (props) => {
-  const [s, _s] = useState(true);
+export const App: React.FC = () => {
   return (
-    <>
-      {/* <React.StrictMode> */}
-      <button onClick={() => _s((s) => !s)}>T</button>
-      {s && (
-        <SocketContext>
-          <QueryClientProvider client={queryClient}>
-            <RoomList />
-            <hr />
-            <MessageList />
-            <MessageSenderForm />
-          </QueryClientProvider>
-        </SocketContext>
-      )}
-      {/* </React.StrictMode> */}
-    </>
+    <QueryClientProvider client={queryClient}>
+      <SocketProvider socket={socket}>
+        <RoutingPage />
+      </SocketProvider>
+    </QueryClientProvider>
   );
 };

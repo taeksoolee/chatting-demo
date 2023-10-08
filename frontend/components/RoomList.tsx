@@ -1,50 +1,44 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import { SocketContextStore } from "frontend/context";
+import { Room } from "interface";
+import { useSocket } from "frontend/context/socket";
 
-import styled from "styled-components";
+import c from 'classnames';
 
-const Button = styled.button`
-  &.active {
-    color: red;
-  }
-`;
+export type OnSelectedRoom = (room: string) => void;
 
-export const RoomList: React.FC<{}> = (props) => {
-  const socket = useContext(SocketContextStore);
+export const RoomList: React.FC<{}> = () => {
+  const { enterRoom } = useSocket();
 
-  const { data: rooms } = useQuery<string[]>(["rooms"], () => {
+  const { data: rooms } = useQuery<Room[]>(["rooms"], () => {
     return axios
-      .get<string[]>("//localhost:4000/rooms")
+      .get<Room[]>("//localhost:4000/rooms")
       .then((res) => res.data)
-      .then((data) => ["", ...data]);
   });
 
-  const [selected, setSelected] = useState("");
-
-  const selectRoom = (room: string) => {
-    socket.controller.enterRoom(room);
-    setSelected(() => room);
+  const selectRoom = (room: Room) => {
+    enterRoom(room);
   };
 
-  useEffect(() => {
-    selectRoom("");
-  }, []);
+  // useEffect(() => {
+  //   if (rooms && rooms.length > 0) {
+  //     selectRoom(rooms[0]);
+  //   }
+  // }, [rooms]);
 
   return (
-    <div>
-      <h1>Room List</h1>
-      {rooms?.map((room, idx) => (
-        <div key={idx}>
-          <Button
-            onClick={() => selectRoom(room)}
-            className={selected === room ? "active" : ""}
-          >
-            {room ? room : "None"}
-          </Button>
-        </div>
+    <article>
+      {rooms?.map((e, idx) => (
+        <button
+          key={idx}
+          onClick={() => selectRoom(e)}
+          // className={c('full', {active: room.name === e.name})}
+          className={c('full')}
+        >
+          {e.name ? e.name : "None"}
+        </button>
       ))}
-    </div>
+    </article>
   );
 };

@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "npm run dev:backend | npm run dev:frontend",
     "dev:frontend": "npx parcel ./frontend/index.html",
-    "run:backend": "ts-node backend/app.ts",
-    "dev:backend": "nodemon --watch 'backend/**/*.ts' --exec 'ts-node' backend/app.ts",
+    "run:backend": "ts-node -r tsconfig-paths/register ./backend/app.ts",
+    "dev:backend": "nodemon --watch 'backend/**/*.ts' --exec 'ts-node' -r tsconfig-paths/register ./backend/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,10 +16,12 @@
   "dependencies": {
     "@tanstack/react-query": "^4.35.7",
     "axios": "^1.5.1",
+    "classnames": "^2.3.2",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.11.0",
     "rxjs": "^7.8.1",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
@@ -27,6 +29,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@parcel/transformer-sass": "^2.9.3",
     "@types/express": "^4.17.18",
     "@types/node": "^20.8.2",
     "@types/react": "^18.2.25",
@@ -36,6 +39,7 @@
     "parcel": "^2.9.3",
     "process": "^0.11.10",
     "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2"
   }
